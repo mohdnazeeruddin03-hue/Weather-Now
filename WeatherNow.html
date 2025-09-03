@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Weather App</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    input, button { padding: 8px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h2>🌤 Weather App</h2>
+  <input id="city" placeholder="Enter city">
+  <button onclick="getWeather()">Get</button>
+  <div id="result"></div>
+
+  <script>
+    async function getWeather() {
+      let city = document.getElementById("city").value;
+      let geo = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1').then(r=>r.json());
+      if (!geo.results) return result.innerHTML="City not found!";
+      let {latitude, longitude, name, country} = geo.results[0];
+      let w = await fetch('https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true').then(r=>r.json());
+      let t = w.current_weather.temperature, c = w.current_weather.weathercode;
+      let icon = {0:"☀",1:"🌤",2:"⛅",3:"☁",45:"🌫",48:"🌫",51:"🌦",61:"🌧",71:"❄",95:"⛈"}[c]||"❓";
+      result.innerHTML = '<h3>${name}, ${country}</h3><p>${t}°C</p><p style="font-size:40px">${icon}</p>';
+    }
+  </script>
+</body>
+</html>
